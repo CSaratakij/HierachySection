@@ -13,13 +13,11 @@ public static class HierachySection
     const string DEFAULT_LABEL = "Section";
     const string DEFAULT_FULL_LABEL = "--- Section ---";
 
-    static Vector2 offset = new Vector2(0.0f, 2.0f);
-    static Color backgroundColor = Color.black;
-    static Color foregroundColor = Color.white;
-
     static int totalObject;
     static Scene openScene;
     static List<int> sectionInstanceID;
+
+    static Color backgroundColor = Color.black;
 
 
     static HierachySection()
