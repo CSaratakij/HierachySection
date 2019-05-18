@@ -62,12 +62,10 @@ public static class HierachySection
 
         if (isSomeObjectAddIn)
         {
-            Debug.Log("Some object add in..");
             AddSectionID(Selection.transforms);
         }
 
         totalObject = allObject.Length;
-        Debug.Log("Total id : " + sectionInstanceID.Count);
     }
 
     static void ClearNonExistSectionID()
@@ -86,7 +84,6 @@ public static class HierachySection
 
         foreach (int id in removeList)
         {
-            Debug.Log("Delete non-exist id");
             sectionInstanceID.Remove(id);
         }
 
@@ -119,7 +116,6 @@ public static class HierachySection
 
         if (isSectionInstance && canRename)
         {
-            Debug.Log("Can Rename");
             string objectName = obj.name.Trim(PREFIX_SYMBOL, ' ');
 
             if (string.IsNullOrEmpty(objectName))
@@ -128,10 +124,6 @@ public static class HierachySection
             }
 
             obj.name = string.Format(PREFIX + " {0} " + PREFIX, objectName);
-        }
-        else
-        {
-            Debug.Log("Can't..");
         }
     }
 
@@ -156,11 +148,6 @@ public static class HierachySection
         if (canAddSectionID && !isAlreadyExist)
         {
             sectionInstanceID.Add(targetObject.gameObject.GetInstanceID());
-            Debug.Log("Add id in obj name:" + targetObject.gameObject.name);
-        }
-        else
-        {
-            Debug.Log("Can't add section id of object : " + targetObject.gameObject.name);
         }
     }
 
