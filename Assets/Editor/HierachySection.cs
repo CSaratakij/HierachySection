@@ -31,7 +31,7 @@ public static class HierachySection
     {
         EditorApplication.hierarchyChanged += OnHierachyChanged;
         EditorApplication.hierarchyWindowItemOnGUI += OnHierachyWindowItemGUI;
-        EditorSceneManager.sceneOpened += OnSceneOpened;
+        EditorSceneManager.activeSceneChangedInEditMode += OnActiveSceneChange;
 
         sectionInstanceID = new List<int>();
         UpdateSectionInstanceID(SceneManager.GetActiveScene());
@@ -74,9 +74,9 @@ public static class HierachySection
         }
     }
 
-    static void OnSceneOpened(Scene scene, OpenSceneMode mode)
+    static void OnActiveSceneChange(Scene current, Scene next)
     {
-        UpdateSectionInstanceID(scene);
+        UpdateSectionInstanceID(next);
     }
 
     static void SectionHandler()
