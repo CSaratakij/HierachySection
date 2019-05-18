@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 
 [InitializeOnLoadAttribute]
 public static class HierachySection
@@ -20,15 +22,19 @@ public static class HierachySection
         Initialize();
     }
 
-    static void OnHierachyChanged()
-    {
-        SectionHandler();
-    }
-
     static void Initialize()
     {
         EditorApplication.hierarchyChanged += OnHierachyChanged;
+        EditorSceneManager.sceneOpened += OnSceneOpened;
+
         sectionInstanceID = new List<int>();
+        UpdateSectionInstanceID();
+
+    }
+
+    static void UpdateSectionInstanceID()
+    {
+        sectionInstanceID.Clear();
 
         var allObject = Resources.FindObjectsOfTypeAll<GameObject>();
         totalObject = allObject.Length;
@@ -40,6 +46,16 @@ public static class HierachySection
                 sectionInstanceID.Add(obj.GetInstanceID());
             }
         }
+    }
+
+    static void OnHierachyChanged()
+    {
+        SectionHandler();
+    }
+
+    static void OnSceneOpened(Scene scene, OpenSceneMode mode)
+    {
+        UpdateSectionInstanceID();
     }
 
     static void SectionHandler()
