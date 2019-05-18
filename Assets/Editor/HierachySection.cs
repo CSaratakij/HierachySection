@@ -14,7 +14,9 @@ public static class HierachySection
     const string DEFAULT_FULL_LABEL = "--- Section ---";
 
     static int totalObject;
+    static Scene openScene;
     static List<int> sectionInstanceID;
+
 
 
     static HierachySection()
@@ -28,15 +30,17 @@ public static class HierachySection
         EditorSceneManager.sceneOpened += OnSceneOpened;
 
         sectionInstanceID = new List<int>();
-        UpdateSectionInstanceID();
+        UpdateSectionInstanceID(SceneManager.GetActiveScene());
     }
 
-    static void UpdateSectionInstanceID()
+    static void UpdateSectionInstanceID(Scene scene)
     {
         sectionInstanceID.Clear();
 
+        openScene = scene;
+        totalObject = scene.rootCount;
+
         var allObject = Resources.FindObjectsOfTypeAll<GameObject>();
-        totalObject = allObject.Length;
 
         foreach (GameObject obj in allObject)
         {
@@ -54,16 +58,16 @@ public static class HierachySection
 
     static void OnSceneOpened(Scene scene, OpenSceneMode mode)
     {
-        UpdateSectionInstanceID();
+        UpdateSectionInstanceID(scene);
     }
 
     static void SectionHandler()
     {
-        var allObject = Resources.FindObjectsOfTypeAll<GameObject>();
+        var totalSceneRoot = openScene.rootCount;
 
-        bool isSomeObjectDeleted = (totalObject > allObject.Length);
-        bool isSomeObjectRename = (totalObject == allObject.Length);
-        bool isSomeObjectAddIn = (totalObject < allObject.Length);
+        bool isSomeObjectDeleted = (totalObject > totalSceneRoot);
+        bool isSomeObjectRename = (totalObject == totalSceneRoot);
+        bool isSomeObjectAddIn = (totalObject < totalSceneRoot);
 
         if (isSomeObjectDeleted)
         {
@@ -80,7 +84,7 @@ public static class HierachySection
             AddSectionID(Selection.transforms);
         }
 
-        totalObject = allObject.Length;
+        totalObject = totalSceneRoot;
     }
 
     static void ClearNonExistSectionID()
