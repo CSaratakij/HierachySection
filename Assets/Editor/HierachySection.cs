@@ -162,7 +162,7 @@ public static class HierachySection
 
         if (canAddSectionID && !isAlreadyExist)
         {
-            sectionInstanceID.Add(targetObject.gameObject.GetInstanceID());
+            sectionInstanceID.Add(id);
         }
     }
 
