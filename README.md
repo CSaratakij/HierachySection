@@ -6,4 +6,4 @@
 1) Add script to Editor folder
 2) Press "Control + T" or Use GameObject menu item to Create Section
 
-![screenshot](screenshot/screenshot.png)
+![screenshot](screenshot/screenshot1.png)
