@@ -29,7 +29,6 @@ public static class HierachySection
 
         sectionInstanceID = new List<int>();
         UpdateSectionInstanceID();
-
     }
 
     static void UpdateSectionInstanceID()
