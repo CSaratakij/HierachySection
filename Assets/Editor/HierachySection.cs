@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
-[InitializeOnLoadAttribute]
+[InitializeOnLoad]
 public static class HierachySection
 {
     const char PREFIX_SYMBOL = '-';
@@ -13,10 +13,13 @@ public static class HierachySection
     const string DEFAULT_LABEL = "Section";
     const string DEFAULT_FULL_LABEL = "--- Section ---";
 
+    static Vector2 offset = new Vector2(0.0f, 2.0f);
+    static Color backgroundColor = Color.black;
+    static Color foregroundColor = Color.white;
+
     static int totalObject;
     static Scene openScene;
     static List<int> sectionInstanceID;
-
 
 
     static HierachySection()
@@ -27,6 +30,7 @@ public static class HierachySection
     static void Initialize()
     {
         EditorApplication.hierarchyChanged += OnHierachyChanged;
+        EditorApplication.hierarchyWindowItemOnGUI += OnHierachyWindowItemGUI;
         EditorSceneManager.sceneOpened += OnSceneOpened;
 
         sectionInstanceID = new List<int>();
@@ -54,6 +58,20 @@ public static class HierachySection
     static void OnHierachyChanged()
     {
         SectionHandler();
+    }
+
+    static void OnHierachyWindowItemGUI(int instanceID, Rect selectionRect)
+    {
+        if (sectionInstanceID.Contains(instanceID))
+        {
+            var obj = EditorUtility.InstanceIDToObject(instanceID);
+
+            if (obj == null)
+                return;
+
+            EditorGUI.DrawRect(selectionRect, backgroundColor);
+            EditorGUI.DropShadowLabel(selectionRect, obj.name);
+        }
     }
 
     static void OnSceneOpened(Scene scene, OpenSceneMode mode)
