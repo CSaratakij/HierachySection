@@ -266,9 +266,9 @@ public static class HierachySection
         obj.transform.position = Vector3.zero;
         obj.SetActive(false);
 
-        int id = isPinSection ? currentPinSectionInstanceID : Selection.activeInstanceID;
+        int id = (isPinSection) ? currentPinSectionInstanceID : Selection.activeInstanceID;
 
-        if (sectionInstanceID.Contains(id))
+        if (isPinSection || sectionInstanceID.Contains(id))
         {
             GameObject sectionObj = EditorUtility.InstanceIDToObject(id) as GameObject;
             int offset = sectionObj.transform.GetSiblingIndex() + 1;
