@@ -35,12 +35,16 @@ public static class HierachySection
 
     static void Initialize()
     {
+        sectionInstanceID = new List<int>();
+        SubscribeEvents();
+        RefreshSectionInstanceID(SceneManager.GetActiveScene());
+    }
+
+    static void SubscribeEvents()
+    {
         EditorApplication.hierarchyChanged += OnHierachyChanged;
         EditorApplication.hierarchyWindowItemOnGUI += OnHierachyWindowItemGUI;
         EditorSceneManager.activeSceneChangedInEditMode += OnActiveSceneChange;
-
-        sectionInstanceID = new List<int>();
-        RefreshSectionInstanceID(SceneManager.GetActiveScene());
     }
 
     static void RefreshSectionInstanceID(Scene scene)

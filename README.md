@@ -6,4 +6,15 @@
 1) Add script to Editor folder
 2) Press "Control + T" or Use GameObject menu item to Create Section
 
+# Keybinding
+- Control + T : Create section
+- Alt + Shift + R : Move gameObject up
+- Alt + R : Move gameObject down
+- S : Select next section
+- Shift + S : Select previous section
+- G : Move selected gameobject to current section (downward)
+- Shift + G : Move selected gameobject to current section (upward)
+- Alt + S : Pin section
+- Control + Shift + F12 : Refresh Scripts
+
 ![screenshot](screenshot/screenshot1.png)
