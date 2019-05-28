@@ -4,116 +4,118 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-class HierachySectionSetting : ScriptableObject
+namespace HierachySection.Editor
 {
-    public const string HIERACHY_SECTION_SETTING_PATH = "Assets/Editor/HierachySectionSetting.asset";
-
-    public static readonly Color DEFAULT_FOREGROUND_COLOR = Color.white;
-    public static readonly Color DEFAULT_BACKGROUND_COLOR = Color.black;
-    public static readonly Color DEFAULT_HIGHTLIGHT_FOREGROUND_COLOR = Color.white;
-    public static readonly Color DEFAULT_HIGHTLIGHT_BACKGROUND_COLOR = Color.yellow;
-
-    [SerializeField]
-    Color foregroundColor;
-
-    [SerializeField]
-    Color backgroundColor;
-
-    [SerializeField]
-    Color hilightForegroundColor;
-
-    [SerializeField]
-    Color hilightBackgroundColor;
-
-    public Color ForegroundColor => foregroundColor;
-    public Color BackgroundColor => backgroundColor;
-    public Color HilightForegroundColor => hilightForegroundColor;
-    public Color HilightBackgroundColor => hilightBackgroundColor;
-
-
-    public static HierachySectionSetting GetOrCreateSettings()
+    class HierachySectionSetting : ScriptableObject
     {
-        var settings = AssetDatabase.LoadAssetAtPath<HierachySectionSetting>(HIERACHY_SECTION_SETTING_PATH);
+        public const string HIERACHY_SECTION_SETTING_PATH = "Assets/Editor/HierachySectionSetting.asset";
 
-        if (settings == null)
+        public static readonly Color DEFAULT_FOREGROUND_COLOR = Color.white;
+        public static readonly Color DEFAULT_BACKGROUND_COLOR = Color.black;
+        public static readonly Color DEFAULT_HIGHTLIGHT_FOREGROUND_COLOR = Color.white;
+        public static readonly Color DEFAULT_HIGHTLIGHT_BACKGROUND_COLOR = Color.yellow;
+
+        [SerializeField]
+        Color foregroundColor;
+
+        [SerializeField]
+        Color backgroundColor;
+
+        [SerializeField]
+        Color hilightForegroundColor;
+
+        [SerializeField]
+        Color hilightBackgroundColor;
+
+        public Color ForegroundColor => foregroundColor;
+        public Color BackgroundColor => backgroundColor;
+        public Color HilightForegroundColor => hilightForegroundColor;
+        public Color HilightBackgroundColor => hilightBackgroundColor;
+
+
+        public static HierachySectionSetting GetOrCreateSettings()
         {
-            settings = CreateDefaultSettings();
+            var settings = AssetDatabase.LoadAssetAtPath<HierachySectionSetting>(HIERACHY_SECTION_SETTING_PATH);
+
+            if (settings == null)
+            {
+                settings = CreateDefaultSettings();
+            }
+
+            return settings;
         }
 
-        return settings;
-    }
-
-    internal static void RemoveExistSetting()
-    {
-        AssetDatabase.MoveAssetToTrash(HIERACHY_SECTION_SETTING_PATH);
-    }
-
-    internal static HierachySectionSetting CreateDefaultSettings()
-    {
-        var settings = ScriptableObject.CreateInstance<HierachySectionSetting>();
-
-        settings.foregroundColor = DEFAULT_FOREGROUND_COLOR;
-        settings.backgroundColor = DEFAULT_BACKGROUND_COLOR;
-        settings.hilightForegroundColor = DEFAULT_HIGHTLIGHT_FOREGROUND_COLOR;
-        settings.hilightBackgroundColor = DEFAULT_HIGHTLIGHT_BACKGROUND_COLOR;
-
-        AssetDatabase.CreateAsset(settings, HIERACHY_SECTION_SETTING_PATH);
-        AssetDatabase.SaveAssets();
-
-        return settings;
-    }
-
-    internal static SerializedObject GetSerializedSettings()
-    {
-        return new SerializedObject(GetOrCreateSettings());
-    }
-}
-
-static class HierachySectionSettingGUI
-{
-    [SettingsProvider]
-    public static SettingsProvider CreateMyCustomSettingsProvider()
-    {
-        var provider = new SettingsProvider("Project/HierachySection", SettingsScope.Project)
+        internal static void RemoveExistSetting()
         {
-            label = "HierachySection",
-            guiHandler = (searchContext) =>
+            AssetDatabase.MoveAssetToTrash(HIERACHY_SECTION_SETTING_PATH);
+        }
+
+        internal static HierachySectionSetting CreateDefaultSettings()
+        {
+            var settings = ScriptableObject.CreateInstance<HierachySectionSetting>();
+
+            settings.foregroundColor = DEFAULT_FOREGROUND_COLOR;
+            settings.backgroundColor = DEFAULT_BACKGROUND_COLOR;
+            settings.hilightForegroundColor = DEFAULT_HIGHTLIGHT_FOREGROUND_COLOR;
+            settings.hilightBackgroundColor = DEFAULT_HIGHTLIGHT_BACKGROUND_COLOR;
+
+            AssetDatabase.CreateAsset(settings, HIERACHY_SECTION_SETTING_PATH);
+            AssetDatabase.SaveAssets();
+
+            return settings;
+        }
+
+        internal static SerializedObject GetSerializedSettings()
+        {
+            return new SerializedObject(GetOrCreateSettings());
+        }
+    }
+
+    static class HierachySectionSettingGUI
+    {
+        [SettingsProvider]
+        public static SettingsProvider CreateMyCustomSettingsProvider()
+        {
+            var provider = new SettingsProvider("Project/HierachySection", SettingsScope.Project)
             {
-                var settings = HierachySectionSetting.GetSerializedSettings();
-
-                if (settings == null)
+                label = "HierachySection",
+                guiHandler = (searchContext) =>
                 {
-                    return;
-                }
+                    var settings = HierachySectionSetting.GetSerializedSettings();
 
-                EditorGUILayout.PropertyField(settings.FindProperty("foregroundColor"), new GUIContent("Foreground"));
-                EditorGUILayout.PropertyField(settings.FindProperty("backgroundColor"), new GUIContent("Background"));
-                EditorGUILayout.PropertyField(settings.FindProperty("hilightForegroundColor"), new GUIContent("Hilight Foreground"));
-                EditorGUILayout.PropertyField(settings.FindProperty("hilightBackgroundColor"), new GUIContent("Hilight Background"));
+                    if (settings == null)
+                    {
+                        return;
+                    }
 
-                settings.ApplyModifiedProperties();
+                    EditorGUILayout.PropertyField(settings.FindProperty("foregroundColor"), new GUIContent("Foreground"));
+                    EditorGUILayout.PropertyField(settings.FindProperty("backgroundColor"), new GUIContent("Background"));
+                    EditorGUILayout.PropertyField(settings.FindProperty("hilightForegroundColor"), new GUIContent("Hilight Foreground"));
+                    EditorGUILayout.PropertyField(settings.FindProperty("hilightBackgroundColor"), new GUIContent("Hilight Background"));
 
-                EditorGUILayout.Space();
-                EditorGUILayout.Space();
+                    settings.ApplyModifiedProperties();
 
-                EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.Space();
+                    EditorGUILayout.Space();
 
-                if (GUILayout.Button("Use Default", GUILayout.MaxWidth(100)))
-                {
-                    HierachySectionSetting.RemoveExistSetting();
-                }
+                    EditorGUILayout.BeginHorizontal();
 
-                if (GUILayout.Button("Refresh", GUILayout.MaxWidth(100)))
-                {
-                    HierachySection.RefreshSectionPrompt();
-                }
+                    if (GUILayout.Button("Use Default", GUILayout.MaxWidth(100)))
+                    {
+                        HierachySectionSetting.RemoveExistSetting();
+                    }
 
-                EditorGUILayout.EndHorizontal();
-            },
-            keywords = new HashSet<string>(new[] { "ForegroundColor", "BackgroundColor", "HilightColor" })
-        };
+                    if (GUILayout.Button("Refresh", GUILayout.MaxWidth(100)))
+                    {
+                        HierachySection.RefreshSectionPrompt();
+                    }
 
-        return provider;
+                    EditorGUILayout.EndHorizontal();
+                },
+                keywords = new HashSet<string>(new[] { "ForegroundColor", "BackgroundColor", "HilightColor" })
+            };
+
+            return provider;
+        }
     }
 }
-
