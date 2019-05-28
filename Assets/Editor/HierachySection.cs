@@ -24,8 +24,11 @@ public static class HierachySection
     static Scene openScene;
     static List<int> sectionInstanceID;
 
+    static Color normalContentColor = Color.white;
+    static Color foregroundColor = Color.white;
     static Color backgroundColor = Color.black;
-    static Color hilightColor = Color.yellow;
+    static Color hilightForegroundColor = Color.white;
+    static Color hilightBackgroundColor = Color.yellow;
 
 
     static HierachySection()
@@ -35,6 +38,7 @@ public static class HierachySection
 
     static void Initialize()
     {
+        normalContentColor = GUI.contentColor;
         sectionInstanceID = new List<int>();
         SubscribeEvents();
         RefreshSectionInstanceID(SceneManager.GetActiveScene());
@@ -66,6 +70,17 @@ public static class HierachySection
                 sectionInstanceID.Add(obj.GetInstanceID());
             }
         }
+
+        LoadSettings();
+    }
+
+    static void LoadSettings()
+    {
+        var settings = HierachySectionSetting.GetOrCreateSettings();
+        foregroundColor = settings.ForegroundColor;
+        backgroundColor = settings.BackgroundColor;
+        hilightForegroundColor = settings.HilightForegroundColor;
+        hilightBackgroundColor = settings.HilightBackgroundColor;
     }
 
     static void OnHierachyChanged()
@@ -129,8 +144,12 @@ public static class HierachySection
         if (Selection.instanceIDs.Length > 1)
             isInSelelect = IsSectionInSelection(Selection.instanceIDs, instanceID);
 
-        EditorGUI.DrawRect(selectionRect, (isInSelelect || isSelectOneObject) ? hilightColor : backgroundColor);
+        EditorGUI.DrawRect(selectionRect, (isSelectOneObject || isInSelelect) ? hilightBackgroundColor : backgroundColor);
+
+        GUI.contentColor = (isSelectOneObject || isInSelelect) ? hilightForegroundColor : foregroundColor;
         EditorGUI.DropShadowLabel(selectionRect, (isPinSection && instanceID == currentPinSectionInstanceID) ? obj.name + " (P)" : obj.name);
+
+        GUI.contentColor = normalContentColor;
     }
 
     static bool IsSectionInSelection(int[] instanceIDs, int instanceID)
