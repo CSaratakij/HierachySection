@@ -1,9 +1,10 @@
 # HierachySection
 - Unity custom menu item to create section in Hierachy (empty Game Object with a name "--- Section ---")
 - Support rename, automatic adding prefix ("---") when section name has changed.
+- Support custom color in project setting (refresh script to see the changes)
 
 # Getting Started
-1) Add script to Editor folder
+1) Add all scripts from this Editor folder to your Editor folder
 2) Press "Control + T" or Use GameObject menu item to Create Section
 
 # Keybinding

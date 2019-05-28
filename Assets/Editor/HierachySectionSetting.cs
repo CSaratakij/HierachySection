@@ -8,12 +8,19 @@ namespace HierachySection.Editor
 {
     class HierachySectionSetting : ScriptableObject
     {
-        public const string HIERACHY_SECTION_SETTING_PATH = "Assets/Editor/HierachySectionSetting.asset";
+        public const string ASSET_PARENT_FOLDER = "Assets";
+        public const string ASSET_SUB_FOLDER = "Editor";
+        public const string ASSET_NAME = "HierachySectionSetting.asset";
+
+        public static readonly string SETTING_ASSET_FOLDER = ASSET_PARENT_FOLDER + '/' + ASSET_SUB_FOLDER;
+        public static readonly string SETTING_ASSET_PATH = SETTING_ASSET_FOLDER + '/' + ASSET_NAME;
 
         public static readonly Color DEFAULT_FOREGROUND_COLOR = Color.white;
         public static readonly Color DEFAULT_BACKGROUND_COLOR = Color.black;
+
         public static readonly Color DEFAULT_HIGHTLIGHT_FOREGROUND_COLOR = Color.white;
         public static readonly Color DEFAULT_HIGHTLIGHT_BACKGROUND_COLOR = Color.yellow;
+
 
         [SerializeField]
         Color foregroundColor;
@@ -35,7 +42,7 @@ namespace HierachySection.Editor
 
         public static HierachySectionSetting GetOrCreateSettings()
         {
-            var settings = AssetDatabase.LoadAssetAtPath<HierachySectionSetting>(HIERACHY_SECTION_SETTING_PATH);
+            var settings = AssetDatabase.LoadAssetAtPath<HierachySectionSetting>(SETTING_ASSET_PATH);
 
             if (settings == null)
             {
@@ -47,7 +54,7 @@ namespace HierachySection.Editor
 
         internal static void RemoveExistSetting()
         {
-            AssetDatabase.MoveAssetToTrash(HIERACHY_SECTION_SETTING_PATH);
+            AssetDatabase.DeleteAsset(SETTING_ASSET_PATH);
         }
 
         internal static HierachySectionSetting CreateDefaultSettings()
@@ -59,7 +66,12 @@ namespace HierachySection.Editor
             settings.hilightForegroundColor = DEFAULT_HIGHTLIGHT_FOREGROUND_COLOR;
             settings.hilightBackgroundColor = DEFAULT_HIGHTLIGHT_BACKGROUND_COLOR;
 
-            AssetDatabase.CreateAsset(settings, HIERACHY_SECTION_SETTING_PATH);
+            if (!AssetDatabase.IsValidFolder(SETTING_ASSET_FOLDER))
+            {
+                AssetDatabase.CreateFolder(ASSET_PARENT_FOLDER, ASSET_SUB_FOLDER);
+            }
+
+            AssetDatabase.CreateAsset(settings, SETTING_ASSET_PATH);
             AssetDatabase.SaveAssets();
 
             return settings;
