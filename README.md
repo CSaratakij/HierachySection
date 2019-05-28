@@ -19,3 +19,4 @@
 - Control + Shift + F12 : Refresh Scripts
 
 ![screenshot](screenshot/screenshot1.png)
+![screenshot](screenshot/screenshot2.png)
