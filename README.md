@@ -2,6 +2,7 @@
 - Unity custom menu item to create section in Hierachy (empty Game Object with a name "--- Section ---")
 - Support rename, automatic adding prefix ("---") when section name has changed.
 - Support custom color in project setting (refresh script to see the changes)
+- Option to set all section gameobject's tag to 'EditorOnly' (Not include these object in build)
 
 # Getting Started
 1) Add all scripts from this Editor folder to your Editor folder
