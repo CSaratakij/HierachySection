@@ -333,6 +333,9 @@ namespace HierachySection.Editor
         [MenuItem("GameObject/Section/Select Next Section _s", false, 0)]
         public static void SelectNextSection()
         {
+            if (EditorApplication.isPlaying)
+                return;
+
             int maxIndex = sectionInstanceID.Count - 1;
 
             if (maxIndex < 0)
@@ -350,6 +353,9 @@ namespace HierachySection.Editor
         [MenuItem("GameObject/Section/Select Previous Section _S", false, 0)]
         public static void SelectPreviousSection()
         {
+            if (EditorApplication.isPlaying)
+                return;
+
             int maxIndex = sectionInstanceID.Count - 1;
 
             if (maxIndex < 0)
