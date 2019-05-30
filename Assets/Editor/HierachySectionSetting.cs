@@ -23,6 +23,9 @@ namespace HierachySection.Editor
 
 
         [SerializeField]
+        bool autoSetEditorOnlyTag;
+
+        [SerializeField]
         Color foregroundColor;
 
         [SerializeField]
@@ -34,6 +37,7 @@ namespace HierachySection.Editor
         [SerializeField]
         Color hilightBackgroundColor;
 
+        public bool AutoSetEditorOnlyTag => autoSetEditorOnlyTag;
         public Color ForegroundColor => foregroundColor;
         public Color BackgroundColor => backgroundColor;
         public Color HilightForegroundColor => hilightForegroundColor;
@@ -61,6 +65,7 @@ namespace HierachySection.Editor
         {
             var settings = ScriptableObject.CreateInstance<HierachySectionSetting>();
 
+            settings.autoSetEditorOnlyTag = true;
             settings.foregroundColor = DEFAULT_FOREGROUND_COLOR;
             settings.backgroundColor = DEFAULT_BACKGROUND_COLOR;
             settings.hilightForegroundColor = DEFAULT_HIGHTLIGHT_FOREGROUND_COLOR;
@@ -100,6 +105,7 @@ namespace HierachySection.Editor
                         return;
                     }
 
+                    EditorGUILayout.PropertyField(settings.FindProperty("autoSetEditorOnlyTag"), new GUIContent("Auto set \" EditorOnly \" tag"));
                     EditorGUILayout.PropertyField(settings.FindProperty("foregroundColor"), new GUIContent("Foreground"));
                     EditorGUILayout.PropertyField(settings.FindProperty("backgroundColor"), new GUIContent("Background"));
                     EditorGUILayout.PropertyField(settings.FindProperty("hilightForegroundColor"), new GUIContent("Hilight Foreground"));

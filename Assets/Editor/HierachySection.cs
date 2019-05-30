@@ -11,6 +11,7 @@ namespace HierachySection.Editor
     public static class HierachySection
     {
         const char PREFIX_SYMBOL = '-';
+
         const string PREFIX = "---";
         const string DEFAULT_LABEL = "Section";
         const string DEFAULT_FULL_LABEL = "--- Section ---";
@@ -20,6 +21,7 @@ namespace HierachySection.Editor
         static int currentSectionIndex;
         static int currentPinSectionInstanceID;
 
+        static bool autoSetEditorOnlyTag = false;
         static bool isBeginRename = false;
         static bool isPinSection = false;
 
@@ -55,6 +57,7 @@ namespace HierachySection.Editor
 
         static void RefreshSectionInstanceID(Scene scene)
         {
+            LoadSettings();
             sectionInstanceID.Clear();
 
             currentSectionIndex = 0;
@@ -69,16 +72,21 @@ namespace HierachySection.Editor
             {
                 if (obj.name.Contains(PREFIX))
                 {
+                    if (autoSetEditorOnlyTag)
+                    {
+                        Undo.RecordObject(obj, "Set section tag to \"EditorOnly\"");
+                        obj.tag = "EditorOnly";
+                    }
+
                     sectionInstanceID.Add(obj.GetInstanceID());
                 }
             }
-
-            LoadSettings();
         }
 
         static void LoadSettings()
         {
             var settings = HierachySectionSetting.GetOrCreateSettings();
+            autoSetEditorOnlyTag = settings.AutoSetEditorOnlyTag;
             foregroundColor = settings.ForegroundColor;
             backgroundColor = settings.BackgroundColor;
             hilightForegroundColor = settings.HilightForegroundColor;
@@ -283,6 +291,11 @@ namespace HierachySection.Editor
         public static void CreateSection()
         {
             GameObject obj = new GameObject(DEFAULT_FULL_LABEL);
+
+            if (autoSetEditorOnlyTag)
+            {
+                obj.tag = "EditorOnly";
+            }
 
             obj.transform.position = Vector3.zero;
             obj.SetActive(false);

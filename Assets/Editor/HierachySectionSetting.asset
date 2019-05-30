@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f10873006967c40348cc6e0e58210a2d, type: 3}
   m_Name: HierachySectionSetting
   m_EditorClassIdentifier: 
+  autoSetEditorOnlyTag: 1
   foregroundColor: {r: 1, g: 1, b: 1, a: 1}
   backgroundColor: {r: 0, g: 0, b: 0, a: 1}
   hilightForegroundColor: {r: 1, g: 1, b: 1, a: 1}
