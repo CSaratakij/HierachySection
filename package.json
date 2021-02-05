@@ -1,0 +1,19 @@
+{
+    "name": "com.csaratakij.hierachysection",
+    "version": "1.0.3",
+    "displayName": "HierachySection",
+    "description": "Unity custom menu item to create section in Hierachy (The empty game object with a name '--- Section ---')",
+    "unity": "2019.1",
+    "unityRelease": "0b5",
+    "keywords": [
+        "hierachysection",
+        "hierachy",
+        "section"
+    ],
+    "author": {
+        "name": "Chatchai Saratakij",
+        "email": "csaratakij@gmail.com",
+        "url": "https://csaratakij.github.io"
+    }
+}
+
