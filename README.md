@@ -6,7 +6,7 @@
 
 # Install
 You can use unity package manager, add this package via git url.
-    url : https://github.com/CSaratakij/HierachySection.git#upm
+>> url : https://github.com/CSaratakij/HierachySection.git#upm
 
 # Getting Started
 1) Add all scripts from this Editor folder to your Editor folder
