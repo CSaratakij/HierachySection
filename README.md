@@ -4,6 +4,10 @@
 - Support custom color in project setting (refresh script to see the changes)
 - Option to set all section gameobject's tag to 'EditorOnly' (Not include these object in build)
 
+# Install
+You can use unity package manager, add this package via git url.
+    url : https://github.com/CSaratakij/HierachySection.git#upm
+
 # Getting Started
 1) Add all scripts from this Editor folder to your Editor folder
 2) Press "Control + T" or Use GameObject menu item to Create Section
@@ -21,3 +25,4 @@
 
 ![screenshot](screenshot/screenshot1.png)
 ![screenshot](screenshot/screenshot2.png)
+
