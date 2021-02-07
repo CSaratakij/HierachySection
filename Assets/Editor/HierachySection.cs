@@ -226,7 +226,23 @@ namespace HierachySection.Editor
 
             var info = sectionInstanceID[instanceID];
 
-            string objectName = isPinSection && (instanceID == currentPinSectionInstanceID) ? $"{PREFIX} {info.title} [ x ] {info.order}" : $"{PREFIX} {info.title} {info.order} {PREFIX}";
+            string postFix = "";
+
+            if (instanceID == currentSectionID)
+            {
+                string labelStatus = "x";
+
+                if (isPinSection && (instanceID == currentPinSectionInstanceID))
+                    labelStatus += "P";
+
+                postFix = $"[ {labelStatus} ]";
+            }
+            else
+            {
+                postFix = (isPinSection) && (currentPinSectionInstanceID == instanceID) ? $"[ P ]" : PREFIX;
+            }
+
+            string objectName = $"{PREFIX} {info.title} {postFix}";
             bool isInSelect = sectionInstanceID[instanceID].isSelected;
 
             EditorGUI.DrawRect(selectionRect, (isSelectOneObject || isInSelect) ? hilightBackgroundColor : backgroundColor);
