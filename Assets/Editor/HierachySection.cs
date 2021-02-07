@@ -48,14 +48,31 @@ namespace HierachySection.Editor
 
         public class SectionInfo
         {
-            public string title;
+            public bool IsDirty => (previousSiblingIndex != currentSiblingIndex);
+
+            int previousSiblingIndex;
+            int currentSiblingIndex;
+
             public int order;
             public bool isSelected;
+            public string title;
 
             public SectionInfo(int order)
             {
                 this.order = order;
                 isSelected = false;
+            }
+
+            public void UpdateTransformSiblingIndex(int index)
+            {
+                previousSiblingIndex = currentSiblingIndex;
+                currentSiblingIndex = index;
+            }
+
+            public void ResetTransformSiblingIndex(int index)
+            {
+                previousSiblingIndex = index;
+                currentSiblingIndex = index;
             }
         }
 
@@ -270,21 +287,15 @@ namespace HierachySection.Editor
             bool isSomeObjectChanged = (totalObject == totalSceneRoot);
             bool isSomeObjectAddIn = (totalObject < totalSceneRoot);
 
-            bool isSectionAmountChanged = (previousTotalSection != currentTotalSection);
-
             if (isSomeObjectDeleted)
             {
                 ClearNonExistSectionID();
-
-                previousTotalSection = currentTotalSection;
-                currentTotalSection = sectionInstanceID.Keys.Count;
-
-                if (isSectionAmountChanged)
-                    UpdateSectionOrder();
+                CheckForOrderHierachyChangeWhenDeleted();
             }
             else if (isSomeObjectChanged)
             {
                 UpdateChanged(Selection.transforms);
+                CheckForOrderHierachyChanged();
             }
             else if (isSomeObjectAddIn)
             {
@@ -327,7 +338,19 @@ namespace HierachySection.Editor
                     continue;
                 }
 
+
+                bool shouldPreventFromBeingChild = (targetObj.transform.parent != null);
+
+                if (shouldPreventFromBeingChild) {
+                    targetObj.transform.SetParent(null);
+                    Undo.SetTransformParent(targetObj.transform, null, "Prevent section to be a child...");
+                }
+
                 int siblingIndex = targetObj.transform.GetSiblingIndex();
+
+                if (sortID.ContainsKey(siblingIndex))
+                    continue;
+
                 sortID.Add(siblingIndex, id);
             }
 
@@ -335,10 +358,13 @@ namespace HierachySection.Editor
 
             foreach (var item in sortID)
             {
-                int order = indice;
+                int siblingIndex = item.Key;
                 int id = item.Value;
+                int order = indice;
 
                 sectionInstanceID[id].order = indice;
+                sectionInstanceID[id].ResetTransformSiblingIndex(siblingIndex);
+
                 indice += 1;
             }
 
@@ -346,8 +372,6 @@ namespace HierachySection.Editor
             {
                 sectionInstanceID.Remove(id);
             }
-
-            Debug.Log("Sort : section id");
         }
 
         static void UpdateChanged(Transform[] targetObjects)
@@ -356,6 +380,40 @@ namespace HierachySection.Editor
             {
                 UpdateChanged(obj);
             }
+        }
+
+        static void CheckForOrderHierachyChanged()
+        {
+            if (Selection.activeTransform != null)
+            {
+                int id = Selection.activeInstanceID;
+
+                if (sectionInstanceID.ContainsKey(id))
+                {
+                    bool shouldPreventFromBeingChild = (Selection.activeTransform.parent != null);
+
+                    if (shouldPreventFromBeingChild) {
+                        Undo.SetTransformParent(Selection.activeTransform, null, "Prevent section to be a child...");
+                    }
+
+                    int siblingIndex = Selection.activeTransform.GetSiblingIndex();
+                    sectionInstanceID[id].UpdateTransformSiblingIndex(siblingIndex);
+
+                    if (sectionInstanceID[id].IsDirty)
+                        UpdateSectionOrder();
+                }
+            }
+        }
+
+        static void CheckForOrderHierachyChangeWhenDeleted()
+        {
+            previousTotalSection = currentTotalSection;
+            currentTotalSection = sectionInstanceID.Keys.Count;
+
+            bool isSectionAmountChanged = (previousTotalSection != currentTotalSection);
+
+            if (isSectionAmountChanged)
+                UpdateSectionOrder();
         }
 
         static void UpdateChanged(Transform targetObject)
@@ -368,19 +426,12 @@ namespace HierachySection.Editor
             if (!sectionInstanceID.ContainsKey(id))
                 return;
             
-            var obj = EditorUtility.InstanceIDToObject(id) as GameObject;
-
-            if (obj == null)
-                return;
-
-            bool canRename = !obj.name.Contains(PREFIX);
+            bool canRename = !targetObject.gameObject.name.Contains(PREFIX);
             bool isSectionInstance = sectionInstanceID.ContainsKey(id);
             bool shouldAddSectionPrefix = (isSectionInstance && canRename);
 
             if (shouldAddSectionPrefix)
-            {
-                Rename(obj, id);
-            }
+                Rename(targetObject.gameObject, id);
         }
 
         static void Rename(GameObject obj, int id, string postFix = "---")
@@ -420,6 +471,9 @@ namespace HierachySection.Editor
 
                 sectionInstanceID.Add(id, new SectionInfo(expectIndex));
                 Rename(targetObject.gameObject, id);
+
+                int siblingIndex = targetObject.GetSiblingIndex();
+                sectionInstanceID[id].ResetTransformSiblingIndex(siblingIndex);
 
                 currentSectionID = id;
                 currentSectionIndex = expectIndex;
@@ -625,6 +679,17 @@ namespace HierachySection.Editor
             }
         }
 
+        [MenuItem("GameObject/Section/Refresh Order &#s", false, 0)]
+        public static void RefreshSectionOrder()
+        {
+            UpdateSectionOrder();
+
+            foreach (SceneView scene in SceneView.sceneViews)
+            {
+                scene.ShowNotification(new GUIContent("Section has re-ordered..."));
+            }
+        }
+
         [MenuItem("GameObject/Section/Refresh Section %#F12", false, 0)]
         public static void RefreshSectionPrompt()
         {
@@ -643,26 +708,49 @@ namespace HierachySection.Editor
         [MenuItem("GameObject/Section/Pin Section &s", false, 0)]
         public static void PinSection()
         {
-            bool shouldPinSection = !isPinSection;
+            var isSelectSomething = (Selection.activeTransform != null);
+            var id = (isSelectSomething) ? Selection.activeInstanceID : currentSectionID;
+            var isSelectSection = sectionInstanceID.ContainsKey(id);
 
-            if (shouldPinSection)
+            if (!isSelectSection)
+                return;
+
+            var shouldChangePinImmediately = isSelectSection && (isPinSection && currentPinSectionInstanceID != id);
+            isPinSection = (shouldChangePinImmediately) ? true : !isPinSection;
+
+            if (isPinSection)
             {
-                int id = Selection.activeInstanceID;
-
-                if (!sectionInstanceID.ContainsKey(id))
-                    return;
-
                 currentPinSectionInstanceID = id;
                 currentSectionID = id;
                 currentSectionIndex = sectionInstanceID[id].order;
-
-                isPinSection = shouldPinSection;
             }
             else
             {
                 currentPinSectionInstanceID = 0;
-                isPinSection = shouldPinSection;
             }
+        }
+
+        [MenuItem("GameObject/Section/Remove all section", false, 0)]
+        public static void RemoveAllSection()
+        {
+            bool confirmRefresh = EditorUtility.DisplayDialog("Warning", "Are you sure to remove all section?", "OK", "Cancel");
+
+            if (!confirmRefresh)
+                return;
+
+            foreach (var item in sectionInstanceID)
+            {
+                int id = item.Key;
+                var obj = EditorUtility.InstanceIDToObject(id);
+
+                if (obj == null)
+                    continue;
+
+                Undo.DestroyObjectImmediate(obj);
+            }
+
+            sectionInstanceID.Clear();
+            EditorUtility.DisplayDialog("Done", "All section has been removed", "OK");
         }
     }
 }
